@@ -1,0 +1,134 @@
+%include "/usr/local/share/csc314/asm_io.inc"
+
+
+segment .data
+
+    form        db      "%s",0
+    prompt      db      "Enter the patty code: ",0
+    asd         db      "The patty should have: ",10,0
+    let         db      "Lettuce, ", 10, 0
+    oni         db      "Onions, ", 10, 0
+    tom         db      "Tomatoes, ",10,0
+    pic         db      "Pickles, ",10,0
+    mus         db      "Mustard, ",10,0
+    ket         db      "Ketchup, ",10,0
+    pat         db      "Patty, ",10,0
+    bun         db      "Bun, ",10,0
+    cyph        dq      0x53696e6675, 0x6c5075737379
+    codenum     db      0
+segment .bss
+
+segment .text
+    global  asm_main
+    extern  scanf
+    extern  printf
+
+asm_main:
+    push    ebp
+    mov     ebp, esp
+    ; ********** CODE STARTS HERE **********
+
+    push    form
+    push    prompt
+    call    printf
+    call    read_int
+    mov     BYTE [codenum], al
+
+    ;===========DECIPHER=================
+    mov     esi, 0
+    mov     cl, BYTE [codenum]
+    ror     cl, 3
+    top:
+    mov     bl, BYTE [cyph + esi]
+    xor     cl, bl
+    cmp     esi, 11
+    jg      bot
+    inc     esi
+    jmp     top
+    bot:
+    mov     BYTE [codenum], cl
+    ;=====================================
+
+    push    form
+    push    asd
+    call    printf
+
+    mov     cl, BYTE [codenum]
+    and     cl, 1
+    cmp     cl, 1
+    jne     nolet
+    push    form
+    push    let
+    call    printf
+    nolet:
+
+    mov     cl, BYTE [codenum]
+    and     cl, 2
+    cmp     cl, 2
+    jne     nooni
+    push    form
+    push    oni
+    call    printf
+    nooni:
+
+    mov     cl, BYTE [codenum]
+    and     cl, 4
+    cmp     cl, 4
+    jne     notom
+    push    form
+    push    tom
+    call    printf
+    notom:
+
+    mov     cl, BYTE [codenum]
+    and     cl, 8
+    cmp     cl, 8
+    jne     nopic
+    push    form
+    push    pic
+    call    printf
+    nopic:
+
+    mov     cl, BYTE [codenum]
+    and     cl, 16
+    cmp     cl, 16
+    jne     nomus
+    push    form
+    push    mus
+    call    printf
+    nomus:
+
+    mov     cl, BYTE [codenum]
+    and     cl, 32
+    cmp     cl, 32
+    jne     noket
+    push    form
+    push    ket
+    call    printf
+    noket:
+
+    mov     cl, BYTE [codenum]
+    and     cl, 64
+    cmp     cl, 64
+    jne     nopat
+    push    form
+    push    pat
+    call    printf
+    nopat:
+
+    mov     cl, BYTE [codenum]
+    and     cl, 128
+    cmp     cl, 128
+    jne     nobun
+    push    form
+    push    bun
+    call    printf
+    nobun:
+
+
+    ; *********** CODE ENDS HERE ***********
+    mov     eax, 0
+    mov     esp, ebp
+    pop     ebp
+    ret
+

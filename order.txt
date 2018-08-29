@@ -1,0 +1,165 @@
+%include "/usr/local/share/csc314/asm_io.inc"
+
+segment .data
+
+    form        db      "%s",0
+    let         db      "Lettuce?: ", 0
+    oni         db      "Onions?: ", 0
+    tom         db      "Tomatoes?: ", 0
+    pic         db      "Pickles?: ", 0
+    mus         db      "Mustard?: ", 0
+    ket         db      "Ketchup?: ", 0
+    pat         db      "Patty?: ", 0
+    bun         db      "Bun?: ",0
+    codetxt     db      "Krabby Patty code is: " ,0
+    codenum     db      0
+    cyph        dq      0x53696e6675, 0x6c5075737379
+segment .bss
+
+segment .text
+    global  asm_main
+    extern  printf
+    extern  scanf
+
+asm_main:
+    push    ebp
+    mov     ebp, esp
+    ; ********** CODE STARTS HERE **********
+
+    push    form
+    push    let
+    call    printf
+    call    read_char
+    mov     ebx, eax
+    call    read_char
+    cmp     ebx, 'y'
+    jne     nolet
+    mov     al, BYTE [codenum]
+    or      al, 1
+    mov     BYTE [codenum], al
+    nolet:
+
+    push    form
+    push    oni
+    call    printf
+    call    read_char
+    mov     ebx, eax
+    call    read_char
+    cmp     ebx, 'y'
+    jne     nooni
+    mov     al, BYTE [codenum]
+    or      al, 2
+    mov     BYTE [codenum], al
+    nooni:
+
+    push    form
+    push    tom             ;don't do this if you want to pass CSC150
+    call    printf
+    call    read_char
+    mov     ebx, eax
+    call    read_char
+    cmp     ebx, 'y'
+    jne     notom
+    mov     al, BYTE [codenum]
+    or      al, 4
+    mov     BYTE [codenum], al
+    notom:
+
+    push    form
+    push    pic
+    call    printf
+    call    read_char
+    mov     ebx, eax
+    call    read_char
+    cmp     ebx, 'y'
+    jne     nopic
+    mov     al, BYTE [codenum]
+    or      al, 8
+    mov     BYTE [codenum], al
+    nopic:
+
+    push    form
+    push    mus
+    call    printf
+    call    read_char
+    mov     ebx, eax
+    call    read_char
+    cmp     ebx, 'y'
+    jne     nomus
+    mov     al, BYTE [codenum]
+    or      al, 16
+    mov     BYTE [codenum], al
+    nomus:
+
+    push    form
+    push    ket
+    call    printf
+    call    read_char
+    mov     ebx, eax
+    call    read_char
+    cmp     ebx, 'y'
+    jne     noket
+    mov     al, BYTE [codenum]
+    or      al, 32
+    mov     BYTE [codenum], al
+    noket:
+
+    push    form
+    push    pat
+    call    printf
+    call    read_char
+    mov     ebx, eax
+    call    read_char
+    cmp     ebx, 'y'
+    jne     nopat
+    mov     al, BYTE [codenum]
+    or      al, 64
+    mov     BYTE [codenum], al
+    nopat:
+
+    push    form
+    push    bun
+    call    printf
+    call    read_char
+    mov     ebx, eax
+    call    read_char
+    cmp     ebx, 'y'
+    jne     nobun
+    mov     al, BYTE [codenum]
+    or      al, 128
+    mov     BYTE [codenum], al
+    nobun:
+
+
+    ;============SECURITY SYSTEM=============
+
+    mov     esi, 0
+    mov     cl, BYTE [codenum]
+    top:
+    mov     bl, BYTE [cyph + esi]
+    xor     cl, bl
+    cmp     esi, 11
+    jg      bot
+    inc     esi
+    jmp     top
+    bot:
+    rol     cl, 3
+    mov     BYTE [codenum], cl
+
+    ;===========Print the Code==============
+
+    push    form
+    push    codetxt
+    call    printf
+
+    mov     al, BYTE [codenum]
+    call    print_int
+    call    print_nl
+
+    ; *********** CODE ENDS HERE ***********
+    mov     eax, 0
+    mov     esp, ebp
+    pop     ebp
+    ret
+
+
